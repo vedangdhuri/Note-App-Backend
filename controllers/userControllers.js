@@ -1,6 +1,7 @@
 import { User } from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import { verifyEmail } from "../emailVerify/verifyEmail.js";
+import { sendOtpMail } from "../emailVerify/sendOtpMail.js";
 import jwt from "jsonwebtoken";
 
 export const registerUser = async (req, res) => {
