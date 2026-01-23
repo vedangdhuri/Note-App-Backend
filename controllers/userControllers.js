@@ -52,39 +52,39 @@ export const registerUser = async (req, res) => {
 export const verification = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
-    if(!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
         success: false,
-        message: 'Authorization Token is missing or invalid'
-      
-      })
+        message: "Authorization Token is missing or invalid",
+      });
     }
 
-    const token = authHeader.split(' ')[1]
+    const token = authHeader.split(" ")[1];
 
     let decoded;
 
     try {
-      decoded = jwt.verify(token, process.env.SECRET_KEY)
-    } catch (error) {
+      decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    } catch (err) {
+      if (err.name === "TokenExpiredError") {
+        return res.status(400).json({
+          success: false,
+          message: "The registration token has expired",
+        });
+      }
       return res.status(400).json({
         success: false,
-        message: 'Invalid token'
-      })
-
-      return res.status(400).json({
-        success: false,
-        error: error.message
-      })
+        message: "Token verification failed",
+      });
     }
 
-    const user = await User.findById(decoded.id)
+    const user = await User.findById(decoded.id);
 
-    if(!user) {
+    if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
-      })
+        message: "User not found",
+      });
     }
 
     user.token = null;
@@ -93,13 +93,12 @@ export const verification = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Email verified successfully'
-    })
-  } catch(error) {
+      message: "Email verified successfully",
+    });
+  } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message
-    })
+      error: error.message,
+    });
   }
-}
-
+};
