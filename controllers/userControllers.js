@@ -151,9 +151,13 @@ export const loginUser = async (req, res) => {
     const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
       expiresIn: "10d",
     });
-    const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "30d",
-    });
+    const refreshToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "30d",
+      },
+    );
 
     user.isLoggedIn = true;
     await user.save();
@@ -176,10 +180,16 @@ export const loginUser = async (req, res) => {
 export const logoutUser = async (req, res) => {
   try {
     const userId = res.userId;
+    await Session.deleteMany({ userId });
+    const user = await User.findByIdAndUpdate(userId, { isLoggedIn: false });
+    return res.status(200).json({
+      success: true,
+      message: "User logged out successfully",
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: error.message,
-    })
+    });
   }
-}
+};
