@@ -71,7 +71,14 @@ export const verification = async (req, res) => {
         success: false,
         message: 'Invalid token'
       })
+
+      return res.status(400).json({
+        success: false,
+        error: error.message
+      })
     }
+
+    
 
     user.token = null;
     user.isVerified = true;
