@@ -110,16 +110,57 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
-        });
+      });
     }
-    const user = await User.findOne({email})
-    if(!user) {
+    const user = await User.findOne({ email });
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
-      })
+      });
     }
 
-    const password = await User.findOne({password})
+    const passwordCheck = await bcrypt.compare(password, user.password);
+    if (!passwordCheck) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid password",
+      });
+    }
+
+    // check if user is verified
+    if (user.isVerified !== true) {
+      return res.status(403).json({
+        success: false,
+        message: "Please verify your email",
+      });
+    }
+
+    // check for existing session or delete it
+    const existingSession = await Session.findOne({ userId: user._id });
+    if (existingSession) {
+      await existingSession.deleteOne({userId: user._id});
+    }
+
+    // if a session is not exits then create a new session
+    await Session.create({ userId: user._id });
+    
+
+    // generate token
+    const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {expiresIn: '10d'})
+    const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {expiresIn: '30d'})
+
+    user.isLoggedIn = true;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "User logged in successfully",
+      data: {
+        accessToken,
+        refreshToken,
+      }
+    })
+
   } catch (error) {}
 };
