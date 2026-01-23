@@ -59,6 +59,7 @@ export const verification = async (req, res) => {
       
       })
     }
+
     const token = authHeader.split(' ')[1]
 
     let decoded;
@@ -66,7 +67,7 @@ export const verification = async (req, res) => {
     try {
       decoded = jwt.verify(token, process.env.SECRET_KEY)
     } catch (error) {
-      return res.status(401).json({
+      return res.status(400).json({
         success: false,
         message: 'Invalid token'
       })
