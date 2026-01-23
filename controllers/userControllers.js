@@ -122,7 +122,7 @@ export const loginUser = async (req, res) => {
 
     const passwordCheck = await bcrypt.compare(password, user.password);
     if (!passwordCheck) {
-      return res.status(400).json({
+      return res.status(402).json({
         success: false,
         message: "Invalid password",
       });
@@ -139,16 +139,19 @@ export const loginUser = async (req, res) => {
     // check for existing session or delete it
     const existingSession = await Session.findOne({ userId: user._id });
     if (existingSession) {
-      await existingSession.deleteOne({userId: user._id});
+      await Session.deleteOne({ userId: user._id });
     }
 
     // if a session is not exits then create a new session
     await Session.create({ userId: user._id });
-    
 
     // generate token
-    const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {expiresIn: '10d'})
-    const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {expiresIn: '30d'})
+    const accessToken = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
+      expiresIn: "10d",
+    });
+    const refreshToken = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
+      expiresIn: "30d",
+    });
 
     user.isLoggedIn = true;
     await user.save();
@@ -156,11 +159,15 @@ export const loginUser = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "User logged in successfully",
-      data: {
-        accessToken,
-        refreshToken,
-      }
-    })
-
-  } catch (error) {}
+      accessToken,
+      refreshToken,
+      user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      // error: error.message,
+      error: "this is error",
+    });
+  }
 };
