@@ -22,3 +22,4 @@ export default router;
 // http://localhost:8000/users/verify
 // http://localhost:8000/users/login
 // http://localhost:8000/users/logout
+// http://localhost:8000/users/forgot-password

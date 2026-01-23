@@ -2,7 +2,6 @@ import { User } from "../models/userModel.js";
 import { Session } from "../models/sessionModel.js";
 import bcrypt from "bcryptjs";
 import { verifyEmail } from "../emailVerify/verifyEmail.js";
-import { sendOtpMail } from "../emailVerify/sendOtpMail.js";
 import jwt from "jsonwebtoken";
 
 export const registerUser = async (req, res) => {
@@ -210,7 +209,7 @@ export const forgotPassword = async (req, res) => {
     user.otpExpiry = expiry;
     await user.save();
 
-    await sendOtpMail(email, otp);
+    await sendOtpMail(email, otp)
     return res.status(200).json({
       success: true,
       message: "OTP sent successfully",
