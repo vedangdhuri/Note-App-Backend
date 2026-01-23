@@ -15,6 +15,7 @@ router.post("/verify", verification);
 router.post("/login", loginUser);
 router.post("/logout", isAuthenticated, logoutUser);
 router.post("/forgot-password", forgotPassword);
+router.post("/verifyOtp/:email", verifyOtp);
 
 export default router;
 
