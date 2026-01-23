@@ -4,8 +4,8 @@ import { User } from "../models/userModel.js";
 export const isAuthenticated = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
         success: false,
         message: "Authorization Token is missing or invalid",
@@ -19,7 +19,8 @@ export const isAuthenticated = async (req, res, next) => {
         if (err.name === "TokenExpiredError") {
           return res.status(400).json({
             success: false,
-            message: "Access Token has expired, use refreshtoken to generate again",
+            message:
+              "Access Token has expired, use refreshtoken to generate again",
           });
         }
         return res.status(400).json({
@@ -27,7 +28,7 @@ export const isAuthenticated = async (req, res, next) => {
           message: "Token verification failed",
         });
       }
-      const {id} = decoded;
+      const { id } = decoded;
       const user = await User.findById(id);
       if (!user) {
         return res.status(404).json({
