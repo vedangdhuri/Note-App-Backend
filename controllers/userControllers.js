@@ -1,4 +1,5 @@
 import { User } from "../models/userModel.js";
+import { Session } from "../models/sessionModel.js";
 import bcrypt from "bcryptjs";
 import { verifyEmail } from "../emailVerify/verifyEmail.js";
 import { sendOtpMail } from "../emailVerify/sendOtpMail.js";
@@ -105,7 +106,7 @@ export const verification = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    const { email, password, username } = req.body;
+    const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -113,7 +114,7 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    const user = await User.find({ email, username });
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({
         success: false,
