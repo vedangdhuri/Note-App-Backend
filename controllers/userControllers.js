@@ -113,7 +113,6 @@ export const loginUser = async (req, res) => {
         message: "All fields are required",
       });
     }
-
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({
@@ -121,7 +120,6 @@ export const loginUser = async (req, res) => {
         message: "Unauthorized access",
       });
     }
-
     const passwordCheck = await bcrypt.compare(password, user.password);
     if (!passwordCheck) {
       return res.status(402).json({
@@ -151,13 +149,9 @@ export const loginUser = async (req, res) => {
     const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
       expiresIn: "10d",
     });
-    const refreshToken = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET_KEY,
-      {
-        expiresIn: "30d",
-      },
-    );
+    const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY_SECRET_KEY, {
+      expiresIn: "30d",
+    });
 
     user.isLoggedIn = true;
     await user.save();
