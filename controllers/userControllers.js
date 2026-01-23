@@ -2,6 +2,7 @@ import { User } from "../models/userModel.js";
 import { Session } from "../models/sessionModel.js";
 import bcrypt from "bcryptjs";
 import { verifyEmail } from "../emailVerify/verifyEmail.js";
+import { sendOtpMail } from "../emailVerify/sendOtpMail.js";
 import jwt from "jsonwebtoken";
 
 export const registerUser = async (req, res) => {
@@ -203,7 +204,7 @@ export const forgotPassword = async (req, res) => {
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+    const expiry = new Date(Date.now() + 10 * 60 * 1000);
 
     user.otp = otp;
     user.otpExpiry = expiry;
@@ -221,3 +222,20 @@ export const forgotPassword = async (req, res) => {
     });
   }
 };
+
+export const verifyOtp = async (req, res) => {
+  const { otp } = req.body;
+  cost email = req.user.email;
+
+  if (!otp) {
+    return res.status(400).json({
+      success: false,
+      message: "OTP is required",
+    });
+  }
+  try {
+    const user = await User.findOne({ otp });
+  } catch (error) {
+
+  }
+}
