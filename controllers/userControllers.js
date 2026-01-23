@@ -181,7 +181,7 @@ export const logoutUser = async (req, res) => {
   try {
     const userId = res.userId;
     await Session.deleteMany({ userId });
-    const user = await User.findByIdAndUpdate(userId, { isLoggedIn: false });
+    await User.findByIdAndUpdate(userId, { isLoggedIn: false });
     return res.status(200).json({
       success: true,
       message: "User logged out successfully",
