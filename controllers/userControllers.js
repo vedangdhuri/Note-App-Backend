@@ -105,18 +105,19 @@ export const verification = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, username } = req.body;
     if (!email || !password) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
       });
     }
-    const user = await User.findOne({ email });
+
+    const user = await User.find({ email, username });
     if (!user) {
-      return res.status(404).json({
+      return res.status(401).json({
         success: false,
-        message: "User not found",
+        message: "Unauthorized access",
       });
     }
 
@@ -124,28 +125,28 @@ export const loginUser = async (req, res) => {
     if (!passwordCheck) {
       return res.status(402).json({
         success: false,
-        message: "Invalid password",
+        message: "Incorrect Password",
       });
     }
 
-    // check if user is verified
+    //check if user is verified
     if (user.isVerified !== true) {
       return res.status(403).json({
         success: false,
-        message: "Please verify your email",
+        message: "Verify your account than login",
       });
     }
 
-    // check for existing session or delete it
+    // check for existing session and delete it
     const existingSession = await Session.findOne({ userId: user._id });
     if (existingSession) {
       await Session.deleteOne({ userId: user._id });
     }
 
-    // if a session is not exits then create a new session
+    //create a new session
     await Session.create({ userId: user._id });
 
-    // generate token
+    //Generate tokens
     const accessToken = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
       expiresIn: "10d",
     });
@@ -158,7 +159,7 @@ export const loginUser = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "User logged in successfully",
+      message: `Welcome back ${user.username}`,
       accessToken,
       refreshToken,
       user,
@@ -166,8 +167,7 @@ export const loginUser = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      // error: error.message,
-      error: "this is error",
+      message: error.message,
     });
   }
 };
