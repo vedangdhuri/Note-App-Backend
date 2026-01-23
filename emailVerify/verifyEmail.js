@@ -33,6 +33,7 @@ export const verifyEmail = async (token, email) => {
     html: htmlToSend,
   };
 
+  
   transporter.sendMail(mailConfiguration, function (error, info) {
     if (error) {
       throw new Error("Email sending failed");
