@@ -64,7 +64,7 @@ export const verification = async (req, res) => {
     let decoded;
 
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
+      decoded = jwt.verify(token, process.env.SECRET_KEY)
     } catch (error) {
       return res.status(401).json({
         success: false,
