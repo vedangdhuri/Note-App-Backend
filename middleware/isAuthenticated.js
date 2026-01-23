@@ -1,13 +1,46 @@
+import jwt from "jsonwebtoken";
+import { User } from "../models/userModel.js";
+
 export const isAuthenticated = async (req, res, next) => {
-    try {
-        const authHeader = req.headers.authorization;
-        if(!authHeader || !authHeader.startsWith("Bearer ")) {
-            return res.status(401).json({
-                success: false,
-                message: "Authorization Token is missing or invalid"
-            })
-        }
-    } catch (error) {
-        
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        success: false,
+        message: "Authorization Token is missing or invalid",
+      });
     }
-}
+
+    const token = authHeader.split(" ")[1];
+
+    jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, decoded) => {
+      if (err) {
+        if (err.name === "TokenExpiredError") {
+          return res.status(400).json({
+            success: false,
+            message: "Token has expired",
+          });
+        }
+        return res.status(400).json({
+          success: false,
+          message: "Token verification failed",
+        });
+      }
+      const id = decoded;
+      const user = await User.findById(id);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+      res.userId = user._id;
+      next();
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

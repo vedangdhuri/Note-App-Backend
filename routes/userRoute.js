@@ -1,10 +1,22 @@
-import express from 'express';
-import { loginUser, registerUser, verification } from '../controllers/userControllers.js';
+import express from "express";
+import {
+  loginUser,
+  logoutUser,
+  registerUser,
+  verification,
+} from "../controllers/userControllers.js";
+import { isAuthenticated } from "../middleware/isAuthenticated.js";
 
 const router = express.Router();
 
-router.post('/register', registerUser);
-router.post('/verify', verification);
-router.post('/login', loginUser);
+router.post("/register", registerUser);
+router.post("/verify", verification);
+router.post("/login", loginUser);
+router.post("/logout", isAuthenticated, logoutUser);
 
 export default router;
+
+// http://localhost:8000/users/register
+// http://localhost:8000/users/verify
+// http://localhost:8000/users/login
+// http://localhost:8000/users/logout
