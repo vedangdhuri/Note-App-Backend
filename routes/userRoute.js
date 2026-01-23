@@ -4,6 +4,7 @@ import {
   logoutUser,
   registerUser,
   verification,
+  forgotPassword,
 } from "../controllers/userControllers.js";
 import { isAuthenticated } from "../middleware/isAuthenticated.js";
 
@@ -13,6 +14,7 @@ router.post("/register", registerUser);
 router.post("/verify", verification);
 router.post("/login", loginUser);
 router.post("/logout", isAuthenticated, logoutUser);
+router.post("/forgot-password", forgotPassword);
 
 export default router;
 
