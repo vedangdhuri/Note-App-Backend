@@ -102,3 +102,24 @@ export const verification = async (req, res) => {
     });
   }
 };
+
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+        });
+    }
+    const user = await User.findOne({email})
+    if(!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      })
+    }
+
+    const password = await User.findOne({password})
+  } catch (error) {}
+};
