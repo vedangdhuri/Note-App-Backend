@@ -202,14 +202,12 @@ export const forgotPassword = async (req, res) => {
         message: "User not found",
       });
     }
-
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiry = new Date(Date.now() + 10 * 60 * 1000);
 
     user.otp = otp;
     user.otpExpiry = expiry;
     await user.save();
-
     await sendOtpMail(email, otp);
     return res.status(200).json({
       success: true,
