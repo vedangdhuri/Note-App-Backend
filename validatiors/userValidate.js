@@ -18,7 +18,7 @@ export const userSchema = yup.object({
 
 export const validateUser = (schema) => async (req, res, next) => {
   try {
-    await schema.validate(data);
+    await schema.validate(req.body);
     next();
   } catch (error) {
     return res.status(400).json({
